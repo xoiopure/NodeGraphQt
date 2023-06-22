@@ -16,7 +16,7 @@ class PropertyChangedCmd(QtWidgets.QUndoCommand):
 
     def __init__(self, node, name, value):
         QtWidgets.QUndoCommand.__init__(self)
-        self.setText('property "{}:{}"'.format(node.name(), name))
+        self.setText(f'property "{node.name()}:{name}"')
         self.node = node
         self.name = name
         self.old_val = node.get_property(name)
@@ -344,7 +344,7 @@ class PortLockedCmd(QtWidgets.QUndoCommand):
 
     def __init__(self, port):
         QtWidgets.QUndoCommand.__init__(self)
-        self.setText('lock port "{}"'.format(port.name()))
+        self.setText(f'lock port "{port.name()}"')
         self.port = port
 
     def undo(self):
@@ -366,7 +366,7 @@ class PortUnlockedCmd(QtWidgets.QUndoCommand):
 
     def __init__(self, port):
         QtWidgets.QUndoCommand.__init__(self)
-        self.setText('unlock port "{}"'.format(port.name()))
+        self.setText(f'unlock port "{port.name()}"')
         self.port = port
 
     def undo(self):
@@ -391,9 +391,9 @@ class PortVisibleCmd(QtWidgets.QUndoCommand):
         self.port = port
         self.visible = visible
         if visible:
-            self.setText('show port {}'.format(self.port.name()))
+            self.setText(f'show port {self.port.name()}')
         else:
-            self.setText('hide port {}'.format(self.port.name()))
+            self.setText(f'hide port {self.port.name()}')
 
     def set_visible(self, visible):
         self.port.model.visible = visible

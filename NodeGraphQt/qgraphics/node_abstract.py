@@ -35,8 +35,7 @@ class AbstractNodeItem(QtWidgets.QGraphicsItem):
         self._height = NodeEnum.HEIGHT.value
 
     def __repr__(self):
-        return '{}.{}(\'{}\')'.format(
-            self.__module__, self.__class__.__name__, self.name)
+        return f"{self.__module__}.{self.__class__.__name__}(\'{self.name}\')"
 
     def boundingRect(self):
         return QtCore.QRectF(0.0, 0.0, self._width, self._height)
@@ -202,7 +201,7 @@ class AbstractNodeItem(QtWidgets.QGraphicsItem):
     @name.setter
     def name(self, name=''):
         self._properties['name'] = name
-        self.setToolTip('node: {}'.format(name))
+        self.setToolTip(f'node: {name}')
 
     @property
     def properties(self):
@@ -215,7 +214,7 @@ class AbstractNodeItem(QtWidgets.QGraphicsItem):
         props = {'width': self.width,
                  'height': self.height,
                  'pos':  self.xy_pos}
-        props.update(self._properties)
+        props |= self._properties
         return props
 
     def viewer(self):

@@ -43,8 +43,7 @@ class PortInputNode(BaseNode):
             This is not available for the ``PortInputNode`` class.
         """
         raise PortRegistrationError(
-            '"{}.add_input()" is not available for {}.'
-            .format(self.__class__.__name__, self)
+            f'"{self.__class__.__name__}.add_input()" is not available for {self}.'
         )
 
     def add_output(self, name='output', multi_output=True, display_name=True,
@@ -56,8 +55,7 @@ class PortInputNode(BaseNode):
         """
         if self._outputs:
             raise PortRegistrationError(
-                '"{}.add_output()" only ONE output is allowed for this node.'
-                .format(self.__class__.__name__, self)
+                f'"{self.__class__.__name__}.add_output()" only ONE output is allowed for this node.'
             )
         super(PortInputNode, self).add_output(
             name=name,
@@ -111,8 +109,7 @@ class PortOutputNode(BaseNode):
         """
         if self._inputs:
             raise PortRegistrationError(
-                '"{}.add_input()" only ONE input is allowed for this node.'
-                .format(self.__class__.__name__, self)
+                f'"{self.__class__.__name__}.add_input()" only ONE input is allowed for this node.'
             )
         super(PortOutputNode, self).add_input(
             name=name,
@@ -130,6 +127,5 @@ class PortOutputNode(BaseNode):
             This is not available for the ``PortOutputNode`` class.
         """
         raise PortRegistrationError(
-            '"{}.add_output()" is not available for {}.'
-            .format(self.__class__.__name__, self)
+            f'"{self.__class__.__name__}.add_output()" is not available for {self}.'
         )

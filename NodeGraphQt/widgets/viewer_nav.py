@@ -49,7 +49,7 @@ class NodeNavigationDelagate(QtWidgets.QStyledItemDelegate):
             y = rect.top() + m + 2
             h = rect.height() - (m * 2) - 2
             painter.setBrush(itm_color)
-            for i in range(4):
+            for _ in range(4):
                 itm_rect = QtCore.QRectF(x, y, 1.3, h)
                 painter.drawRoundedRect(itm_rect, 1.0, 1.0)
                 x += 2.0

@@ -178,8 +178,7 @@ class NodeGraph(QtCore.QObject):
         self._wire_signals()
 
     def __repr__(self):
-        return '<{}("root") object at {}>'.format(
-            self.__class__.__name__, hex(id(self)))
+        return f'<{self.__class__.__name__}("root") object at {hex(id(self))}>'
 
     def _register_context_menu(self):
         """
@@ -331,12 +330,11 @@ class NodeGraph(QtCore.QObject):
             data (QtCore.QMimeData): mime data.
             pos (QtCore.QPoint): scene position relative to the drop.
         """
-        uri_regex = re.compile(r'{}(?:/*)([\w/]+)(\.\w+)'.format(URI_SCHEME))
-        urn_regex = re.compile(r'{}([\w\.:;]+)'.format(URN_SCHEME))
+        uri_regex = re.compile(f'{URI_SCHEME}(?:/*)([\w/]+)(\.\w+)')
+        urn_regex = re.compile(f'{URN_SCHEME}([\w\.:;]+)')
         if data.hasFormat('text/uri-list'):
             for url in data.urls():
-                local_file = url.toLocalFile()
-                if local_file:
+                if local_file := url.toLocalFile():
                     try:
                         self.import_session(local_file)
                         continue
@@ -347,11 +345,11 @@ class NodeGraph(QtCore.QObject):
                 uri_search = uri_regex.search(url_str)
                 urn_search = urn_regex.search(url_str)
                 if uri_search:
-                    path = uri_search.group(1)
-                    ext = uri_search.group(2)
-                    self.import_session('{}{}'.format(path, ext))
+                    path = uri_search[1]
+                    ext = uri_search[2]
+                    self.import_session(f'{path}{ext}')
                 elif urn_search:
-                    search_str = urn_search.group(1)
+                    search_str = urn_search[1]
                     node_ids = sorted(re.findall('node:([\w\\.]+)', search_str))
                     x, y = pos.x(), pos.y()
                     for node_id in node_ids:
@@ -481,8 +479,7 @@ class NodeGraph(QtCore.QObject):
             # hide the close button on the first tab.
             tab_bar = self._widget.tabBar()
             for btn_flag in [tab_bar.RightSide, tab_bar.LeftSide]:
-                tab_btn = tab_bar.tabButton(0, btn_flag)
-                if tab_btn:
+                if tab_btn := tab_bar.tabButton(0, btn_flag):
                     tab_btn.deleteLater()
                     tab_bar.setTabButton(0, btn_flag, None)
             self._widget.tabCloseRequested.connect(
@@ -842,7 +839,7 @@ class NodeGraph(QtCore.QObject):
 
         menu = menu or 'graph'
         if not os.path.isfile(file_path):
-            raise IOError('file doesn\'t exists: "{}"'.format(file_path))
+            raise IOError(f"""file doesn\'t exists: "{file_path}\"""")
 
         with open(file_path) as f:
             data = json.load(f)
@@ -1050,10 +1047,10 @@ class NodeGraph(QtCore.QObject):
         Sets the zoom level to fit selected nodes.
         If no nodes are selected then all nodes in the graph will be framed.
         """
-        nodes = self.selected_nodes() or self.all_nodes()
-        if not nodes:
+        if nodes := self.selected_nodes() or self.all_nodes():
+            self._viewer.zoom_to_nodes([n.view for n in nodes])
+        else:
             return
-        self._viewer.zoom_to_nodes([n.view for n in nodes])
 
     def reset_zoom(self):
         """
@@ -1309,7 +1306,7 @@ class NodeGraph(QtCore.QObject):
         node.update()
 
         if push_undo:
-            self._undo_stack.beginMacro('add node: "{}"'.format(node.name()))
+            self._undo_stack.beginMacro(f'add node: "{node.name()}"')
             self._undo_stack.push(NodeAddedCmd(self, node, pos))
             if selected:
                 node.set_selected(True)
@@ -1326,10 +1323,10 @@ class NodeGraph(QtCore.QObject):
             push_undo (bool): register the command to the undo stack. (default: True)
         """
         assert isinstance(node, NodeObject), \
-            'node must be a instance of a NodeObject.'
+                'node must be a instance of a NodeObject.'
         node_id = node.id
         if push_undo:
-            self._undo_stack.beginMacro('delete node: "{}"'.format(node.name()))
+            self._undo_stack.beginMacro(f'delete node: "{node.name()}"')
 
         if isinstance(node, BaseNode):
             for p in node.input_ports():
@@ -1372,7 +1369,7 @@ class NodeGraph(QtCore.QObject):
         assert isinstance(node, NodeObject), 'node must be a Node instance.'
 
         if push_undo:
-            self._undo_stack.beginMacro('delete node: "{}"'.format(node.name()))
+            self._undo_stack.beginMacro(f'delete node: "{node.name()}"')
 
         # collapse group node before removing.
         if isinstance(node, GroupNode) and node.is_expanded:
@@ -1413,9 +1410,7 @@ class NodeGraph(QtCore.QObject):
             return
         node_ids = [n.id for n in nodes]
         if push_undo:
-            self._undo_stack.beginMacro(
-                'deleted "{}" node(s)'.format(len(nodes))
-            )
+            self._undo_stack.beginMacro(f'deleted "{len(nodes)}" node(s)')
         for node in nodes:
 
             # collapse group node before removing.
@@ -1461,25 +1456,24 @@ class NodeGraph(QtCore.QObject):
             if not isinstance(node, BaseNode):
                 continue
 
-            for port in node.input_ports() + node.output_ports():
-                if port.locked():
-                    locked_ports.append('{0.node.name}: {0.name}'.format(port))
-
+            locked_ports.extend(
+                '{0.node.name}: {0.name}'.format(port)
+                for port in node.input_ports() + node.output_ports()
+                if port.locked()
+            )
             base_nodes.append(node)
 
         if locked_ports:
-            message = (
-                'Selected nodes cannot be extracted because the following '
-                'ports are locked:\n{}'.format('\n'.join(sorted(locked_ports)))
-            )
             if prompt_warning:
+                message = (
+                    'Selected nodes cannot be extracted because the following '
+                    'ports are locked:\n{}'.format('\n'.join(sorted(locked_ports)))
+                )
                 self._viewer.message_dialog(message, 'Can\'t Extract Nodes')
             return
 
         if push_undo:
-            self._undo_stack.beginMacro(
-                'extracted "{}" node(s)'.format(len(nodes))
-            )
+            self._undo_stack.beginMacro(f'extracted "{len(nodes)}" node(s)')
 
         for node in base_nodes:
             for port in node.input_ports() + node.output_ports():
@@ -1507,11 +1501,7 @@ class NodeGraph(QtCore.QObject):
         Returns:
             list[NodeGraphQt.BaseNode]: list of nodes.
         """
-        nodes = []
-        for item in self._viewer.selected_nodes():
-            node = self._model.nodes[item.id]
-            nodes.append(node)
-        return nodes
+        return [self._model.nodes[item.id] for item in self._viewer.selected_nodes()]
 
     def select_all(self):
         """
@@ -1586,14 +1576,14 @@ class NodeGraph(QtCore.QObject):
         search = regex.search(name)
         if not search:
             for x in range(1, len(node_names) + 2):
-                new_name = '{} {}'.format(name, x)
+                new_name = f'{name} {x}'
                 if new_name not in node_names:
                     return new_name
 
-        version = search.group(1)
+        version = search[1]
         name = name[:len(version) * -1].strip()
         for x in range(1, len(node_names) + 2):
-            new_name = '{} {}'.format(name, x)
+            new_name = f'{name} {x}'
             if new_name not in node_names:
                 return new_name
 
@@ -1655,7 +1645,7 @@ class NodeGraph(QtCore.QObject):
             n.update_model()
 
             node_dict = n.model.to_dict
-            nodes_data.update(node_dict)
+            nodes_data |= node_dict
 
         for n_id, n_data in nodes_data.items():
             serial_data['nodes'][n_id] = n_data
@@ -1725,8 +1715,7 @@ class NodeGraph(QtCore.QObject):
         nodes = {}
         for n_id, n_data in data.get('nodes', {}).items():
             identifier = n_data['type_']
-            node = self._node_factory.create_node_instance(identifier)
-            if node:
+            if node := self._node_factory.create_node_instance(identifier):
                 node.NODE_NAME = n_data.get('name', node.NODE_NAME)
                 # set properties.
                 for prop in node.model.properties.keys():
@@ -1851,7 +1840,7 @@ class NodeGraph(QtCore.QObject):
         """
         file_path = file_path.strip()
         if not os.path.isfile(file_path):
-            raise IOError('file does not exist: {}'.format(file_path))
+            raise IOError(f'file does not exist: {file_path}')
 
         self.clear_session()
         self.import_session(file_path)
@@ -1865,14 +1854,14 @@ class NodeGraph(QtCore.QObject):
         """
         file_path = file_path.strip()
         if not os.path.isfile(file_path):
-            raise IOError('file does not exist: {}'.format(file_path))
+            raise IOError(f'file does not exist: {file_path}')
 
         try:
             with open(file_path) as data_file:
                 layout_data = json.load(data_file)
         except Exception as e:
             layout_data = None
-            print('Cannot read data from file.\n{}'.format(e))
+            print(f'Cannot read data from file.\n{e}')
 
         if not layout_data:
             return
@@ -1899,8 +1888,7 @@ class NodeGraph(QtCore.QObject):
             return False
         clipboard = QtWidgets.QApplication.clipboard()
         serial_data = self._serialize(nodes)
-        serial_str = json.dumps(serial_data)
-        if serial_str:
+        if serial_str := json.dumps(serial_data):
             clipboard.setText(serial_str)
             return True
         return False
@@ -1962,8 +1950,7 @@ class NodeGraph(QtCore.QObject):
         try:
             serial_data = json.loads(cb_text)
         except json.decoder.JSONDecodeError as e:
-            print('ERROR: Can\'t Decode Clipboard Data:\n'
-                  '"{}"'.format(cb_text))
+            print(f"""ERROR: Can\'t Decode Clipboard Data:\n"{cb_text}\"""")
             return
 
         self._undo_stack.beginMacro('pasted nodes')
@@ -2021,7 +2008,7 @@ class NodeGraph(QtCore.QObject):
 
         if mode is not None:
             states = {False: 'enable', True: 'disable'}
-            text = '{} ({}) nodes'.format(states[mode], len(nodes))
+            text = f'{states[mode]} ({len(nodes)}) nodes'
             self._undo_stack.beginMacro(text)
             [n.set_disabled(mode) for n in nodes]
             self._undo_stack.endMacro()
@@ -2031,9 +2018,9 @@ class NodeGraph(QtCore.QObject):
         enabled_count = len([n for n in nodes if n.disabled()])
         disabled_count = len([n for n in nodes if not n.disabled()])
         if enabled_count > 0:
-            text.append('enabled ({})'.format(enabled_count))
+            text.append(f'enabled ({enabled_count})')
         if disabled_count > 0:
-            text.append('disabled ({})'.format(disabled_count))
+            text.append(f'disabled ({disabled_count})')
         text = ' / '.join(text) + ' nodes'
 
         self._undo_stack.beginMacro(text)
@@ -2070,10 +2057,7 @@ class NodeGraph(QtCore.QObject):
 
         rank = nodes_rank[node] + 1
         for n in connected_nodes:
-            if n in nodes_rank:
-                nodes_rank[n] = max(nodes_rank[n], rank)
-            else:
-                nodes_rank[n] = rank
+            nodes_rank[n] = max(nodes_rank[n], rank) if n in nodes_rank else rank
             NodeGraph._update_node_rank(n, nodes_rank, down_stream)
 
     @staticmethod
@@ -2153,7 +2137,7 @@ class NodeGraph(QtCore.QObject):
             node_height = 120
             for rank in sorted(range(len(rank_map)), reverse=not down_stream):
                 ranked_nodes = rank_map[rank]
-                max_width = max([node.view.width for node in ranked_nodes])
+                max_width = max(node.view.width for node in ranked_nodes)
                 current_x += max_width
                 current_y = 0
                 for idx, node in enumerate(ranked_nodes):
@@ -2168,7 +2152,7 @@ class NodeGraph(QtCore.QObject):
             node_width = 250
             for rank in sorted(range(len(rank_map)), reverse=not down_stream):
                 ranked_nodes = rank_map[rank]
-                max_height = max([node.view.height for node in ranked_nodes])
+                max_height = max(node.view.height for node in ranked_nodes)
                 current_y += max_height
                 current_x = 0
                 for idx, node in enumerate(ranked_nodes):
@@ -2371,7 +2355,7 @@ class NodeGraph(QtCore.QObject):
             return
 
         if node.id not in self._sub_graphs:
-            err = '{} sub graph not initialized!'.format(node.name())
+            err = f'{node.name()} sub graph not initialized!'
             raise RuntimeError(err)
 
         sub_graph = self._sub_graphs.pop(node.id)
@@ -2428,8 +2412,7 @@ class SubGraph(NodeGraph):
         self._clone_context_menu_from_parent()
 
     def __repr__(self):
-        return '<{}("{}") object at {}>'.format(
-            self.__class__.__name__, self._node.name(), hex(id(self)))
+        return f'<{self.__class__.__name__}("{self._node.name()}") object at {hex(id(self))}>'
 
     def _register_builtin_nodes(self):
         """
@@ -2626,9 +2609,7 @@ class SubGraph(NodeGraph):
             child_node = self.sub_graphs[rm_node_id].node
             self.collapse_group_node(child_node)
 
-        # show the selected node id sub graph.
-        sub_graph = self.sub_graphs.get(node_id)
-        if sub_graph:
+        if sub_graph := self.sub_graphs.get(node_id):
             self.widget.show_viewer(sub_graph.subviewer_widget)
             sub_graph.viewer().setFocus()
 
@@ -2757,7 +2738,7 @@ class SubGraph(NodeGraph):
             # note: port nodes can only be deleted by deleting the parent
             #       port object.
             raise NodeDeletionError(
-                '{} can\'t be deleted as it is attached to a port!'.format(node)
+                f"{node} can\'t be deleted as it is attached to a port!"
             )
         super(SubGraph, self).delete_node(node, push_undo=push_undo)
 
@@ -2778,8 +2759,7 @@ class SubGraph(NodeGraph):
                 # note: port nodes can only be deleted by deleting the parent
                 #       port object.
                 raise NodeDeletionError(
-                    '{} can\'t be deleted as it is attached to a port!'
-                    .format(node)
+                    f"{node} can\'t be deleted as it is attached to a port!"
                 )
 
         super(SubGraph, self).delete_nodes(nodes, push_undo=push_undo)

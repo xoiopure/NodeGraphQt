@@ -38,11 +38,7 @@ class _NodeGroupBox(QtWidgets.QGroupBox):
                 'padding': '0px',
             }
         }
-        if self.title():
-            style_dict['QGroupBox']['padding-top'] = '14px'
-        else:
-            style_dict['QGroupBox']['padding-top'] = '2px'
-
+        style_dict['QGroupBox']['padding-top'] = '14px' if self.title() else '2px'
         if align == 'center':
             style_dict['QGroupBox::title']['subcontrol-position'] = 'top center'
         elif align == 'left':
@@ -53,9 +49,9 @@ class _NodeGroupBox(QtWidgets.QGroupBox):
             style_dict['QGroupBox::title']['margin-right'] = '4px'
         stylesheet = ''
         for css_class, css in style_dict.items():
-            style = '{} {{\n'.format(css_class)
+            style = f'{css_class} {{\n'
             for elm_name, elm_val in css.items():
-                style += '  {}:{};\n'.format(elm_name, elm_val)
+                style += f'  {elm_name}:{elm_val};\n'
             style += '}\n'
             stylesheet += style
         self.setStyleSheet(stylesheet)
@@ -101,7 +97,7 @@ class NodeBaseWidget(QtWidgets.QGraphicsProxyWidget):
 
     def setToolTip(self, tooltip):
         tooltip = tooltip.replace('\n', '<br/>')
-        tooltip = '<b>{}</b><br/>{}'.format(self.name, tooltip)
+        tooltip = f'<b>{self.name}</b><br/>{tooltip}'
         super(NodeBaseWidget, self).setToolTip(tooltip)
 
     def on_value_changed(self, *args, **kwargs):
@@ -345,9 +341,9 @@ class NodeLineEdit(NodeBaseWidget):
         }
         stylesheet = ''
         for css_class, css in style_dict.items():
-            style = '{} {{\n'.format(css_class)
+            style = f'{css_class} {{\n'
             for elm_name, elm_val in css.items():
-                style += '  {}:{};\n'.format(elm_name, elm_val)
+                style += f'  {elm_name}:{elm_val};\n'
             style += '}\n'
             stylesheet += style
         ledit = QtWidgets.QLineEdit()
@@ -408,9 +404,9 @@ class NodeCheckBox(NodeBaseWidget):
         }
         stylesheet = ''
         for css_class, css in style_dict.items():
-            style = '{} {{\n'.format(css_class)
+            style = f'{css_class} {{\n'
             for elm_name, elm_val in css.items():
-                style += '  {}:{};\n'.format(elm_name, elm_val)
+                style += f'  {elm_name}:{elm_val};\n'
             style += '}\n'
             stylesheet += style
         _cbox.setStyleSheet(stylesheet)

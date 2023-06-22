@@ -307,8 +307,7 @@ class BaseNode(NodeObject):
             NodeGraphQt.Port: the created port object.
         """
         if name in self.inputs().keys():
-            raise PortRegistrationError(
-                'port name "{}" already registered.'.format(name))
+            raise PortRegistrationError(f'port name "{name}" already registered.')
 
         port_args = [name, multi_input, display_name, locked]
         if painter_func and callable(painter_func):
@@ -350,8 +349,7 @@ class BaseNode(NodeObject):
             NodeGraphQt.Port: the created port object.
         """
         if name in self.outputs().keys():
-            raise PortRegistrationError(
-                'port name "{}" already registered.'.format(name))
+            raise PortRegistrationError(f'port name "{name}" already registered.')
 
         port_args = [name, multi_output, display_name, locked]
         if painter_func and callable(painter_func):
@@ -423,8 +421,8 @@ class BaseNode(NodeObject):
                 return
         if not self.port_deletion_allowed():
             raise PortError(
-                'Port "{}" can\'t be deleted on this node because '
-                '"ports_removable" is not enabled.'.format(port.name()))
+                f"""Port "{port.name()}" can\'t be deleted on this node because "ports_removable" is not enabled."""
+            )
         if port.locked():
             raise PortError('Error: Can\'t delete a port that is locked!')
         self._inputs.remove(port)
@@ -453,8 +451,8 @@ class BaseNode(NodeObject):
                 return
         if not self.port_deletion_allowed():
             raise PortError(
-                'Port "{}" can\'t be deleted on this node because '
-                '"ports_removable" is not enabled.'.format(port.name()))
+                f"""Port "{port.name()}" can\'t be deleted on this node because "ports_removable" is not enabled."""
+            )
         if port.locked():
             raise PortError('Error: Can\'t delete a port that is locked!')
         self._outputs.remove(port)
@@ -684,7 +682,7 @@ class BaseNode(NodeObject):
         """
         node_ports = self._inputs + self._outputs
         if port not in node_ports:
-            raise PortError('Node does not contain port: "{}"'.format(port))
+            raise PortError(f'Node does not contain port: "{port}"')
 
         self._model.add_port_accept_connection_type(
             port_name=port.name(),
@@ -708,14 +706,11 @@ class BaseNode(NodeObject):
         """
         ports = self._inputs + self._outputs
         if port not in ports:
-            raise PortError('Node does not contain port "{}"'.format(port))
+            raise PortError(f'Node does not contain port "{port}"')
 
-        accepted_types = self.graph.model.port_accept_connection_types(
-            node_type=self.type_,
-            port_type=port.type_(),
-            port_name=port.name()
+        return self.graph.model.port_accept_connection_types(
+            node_type=self.type_, port_type=port.type_(), port_name=port.name()
         )
-        return accepted_types
 
     def add_reject_port_type(self, port, port_type_data):
         """
@@ -744,7 +739,7 @@ class BaseNode(NodeObject):
         """
         node_ports = self._inputs + self._outputs
         if port not in node_ports:
-            raise PortError('Node does not contain port: "{}"'.format(port))
+            raise PortError(f'Node does not contain port: "{port}"')
 
         self._model.add_port_reject_connection_type(
             port_name=port.name(),
@@ -768,14 +763,11 @@ class BaseNode(NodeObject):
         """
         ports = self._inputs + self._outputs
         if port not in ports:
-            raise PortError('Node does not contain port "{}"'.format(port))
+            raise PortError(f'Node does not contain port "{port}"')
 
-        rejected_types = self.graph.model.port_reject_connection_types(
-            node_type=self.type_,
-            port_type=port.type_(),
-            port_name=port.name()
+        return self.graph.model.port_reject_connection_types(
+            node_type=self.type_, port_type=port.type_(), port_name=port.name()
         )
-        return rejected_types
 
     def on_input_connected(self, in_port, out_port):
         """

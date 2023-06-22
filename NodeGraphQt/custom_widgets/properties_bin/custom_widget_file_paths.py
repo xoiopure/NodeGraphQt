@@ -35,8 +35,7 @@ class PropFilePath(BaseProperty):
         file_path = FileDialog.getOpenFileName(self,
                                                file_dir=self._file_directory,
                                                ext_filter=self._ext)
-        file = file_path[0] or None
-        if file:
+        if file := file_path[0] or None:
             self.set_value(file)
 
     def _on_value_change(self, value=None):
@@ -71,6 +70,5 @@ class PropFileSavePath(PropFilePath):
         file_path = FileDialog.getSaveFileName(self,
                                                file_dir=self._file_directory,
                                                ext_filter=self._ext)
-        file = file_path[0] or None
-        if file:
+        if file := file_path[0] or None:
             self.set_value(file)

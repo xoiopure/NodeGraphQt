@@ -193,9 +193,7 @@ class GroupNodeItem(NodeItem):
         txt_offset = PortEnum.CLICK_FALLOFF.value - 2
         spacing = 1
 
-        # adjust input position
-        inputs = [p for p in self.inputs if p.isVisible()]
-        if inputs:
+        if inputs := [p for p in self.inputs if p.isVisible()]:
             port_width = inputs[0].boundingRect().width()
             port_height = inputs[0].boundingRect().height()
             port_x = port_width / 2 * -1
@@ -211,9 +209,7 @@ class GroupNodeItem(NodeItem):
                 txt_x += 3.0
                 text.setPos(txt_x, port.y() - 1.5)
 
-        # adjust output position
-        outputs = [p for p in self.outputs if p.isVisible()]
-        if outputs:
+        if outputs := [p for p in self.outputs if p.isVisible()]:
             port_width = outputs[0].boundingRect().width()
             port_height = outputs[0].boundingRect().height()
             port_x = width - (port_width / 2)
@@ -230,9 +226,7 @@ class GroupNodeItem(NodeItem):
                 text.setPos(txt_x, port.y() - 1.5)
 
     def _align_ports_vertical(self, v_offset):
-        # adjust input position
-        inputs = [p for p in self.inputs if p.isVisible()]
-        if inputs:
+        if inputs := [p for p in self.inputs if p.isVisible()]:
             port_width = inputs[0].boundingRect().width()
             port_height = inputs[0].boundingRect().height()
             half_width = port_width / 2
@@ -243,9 +237,7 @@ class GroupNodeItem(NodeItem):
                 port.setPos(port_x - half_width, port_y)
                 port_x += delta
 
-        # adjust output position
-        outputs = [p for p in self.outputs if p.isVisible()]
-        if outputs:
+        if outputs := [p for p in self.outputs if p.isVisible()]:
             port_width = outputs[0].boundingRect().width()
             port_height = outputs[0].boundingRect().height()
             half_width = port_width / 2

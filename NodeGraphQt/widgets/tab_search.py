@@ -79,9 +79,9 @@ class TabSearchLineEditWidget(QtWidgets.QLineEdit):
         }
         stylesheet = ''
         for css_class, css in style_dict.items():
-            style = '{} {{\n'.format(css_class)
+            style = f'{css_class} {{\n'
             for elm_name, elm_val in css.items():
-                style += '  {}:{};\n'.format(elm_name, elm_val)
+                style += f'  {elm_name}:{elm_val};\n'
             style += '}\n'
             stylesheet += style
         self.setStyleSheet(stylesheet)
@@ -140,9 +140,9 @@ class TabSearchMenuWidget(QtWidgets.QMenu):
         }
         self._menu_stylesheet = ''
         for css_class, css in style_dict.items():
-            style = '{} {{\n'.format(css_class)
+            style = f'{css_class} {{\n'
             for elm_name, elm_val in css.items():
-                style += '  {}:{};\n'.format(elm_name, elm_val)
+                style += f'  {elm_name}:{elm_val};\n'
             style += '}\n'
             self._menu_stylesheet += style
         self.setStyleSheet(self._menu_stylesheet)
@@ -158,7 +158,7 @@ class TabSearchMenuWidget(QtWidgets.QMenu):
         self._wire_signals()
 
     def __repr__(self):
-        return '<{} at {}>'.format(self.__class__.__name__, hex(id(self)))
+        return f'<{self.__class__.__name__} at {hex(id(self))}>'
 
     def keyPressEvent(self, event):
         super(TabSearchMenuWidget, self).keyPressEvent(event)
@@ -170,8 +170,7 @@ class TabSearchMenuWidget(QtWidgets.QMenu):
         pattern = '.*?'.join(key.lower())
         regex = re.compile(pattern)
         for item in collection:
-            match = regex.search(item.lower())
-            if match:
+            if match := regex.search(item.lower()):
                 suggestions.append((len(match.group()), match.start(), item))
 
         return [x for _, _, x in sorted(suggestions)]
@@ -231,8 +230,7 @@ class TabSearchMenuWidget(QtWidgets.QMenu):
                     return
 
             text = action.text()
-            node_type = self._node_dict.get(text)
-            if node_type:
+            if node_type := self._node_dict.get(text):
                 self.search_submitted.emit(node_type)
 
         self._close()
@@ -301,7 +299,7 @@ class TabSearchMenuWidget(QtWidgets.QMenu):
                     self._node_dict[name] = node_types[0]
                     continue
                 for node_id in node_types:
-                    self._node_dict['{} ({})'.format(name, node_id)] = node_id
+                    self._node_dict[f'{name} ({node_id})'] = node_id
             self.build_menu_tree()
             self.rebuild = False
 

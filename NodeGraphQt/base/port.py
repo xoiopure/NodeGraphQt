@@ -37,8 +37,7 @@ class Port(object):
 
     def __repr__(self):
         port = str(self.__class__.__name__)
-        return '<{}("{}") object at {}>'.format(
-            port, self.name(), hex(id(self)))
+        return f'<{port}("{self.name()}") object at {hex(id(self))}>'
 
     @property
     def view(self):
@@ -169,10 +168,7 @@ class Port(object):
         """
         graph = self.node().graph
         undo_stack = graph.undo_stack()
-        if state:
-            undo_cmd = PortLockedCmd(self)
-        else:
-            undo_cmd = PortUnlockedCmd(self)
+        undo_cmd = PortLockedCmd(self) if state else PortUnlockedCmd(self)
         if push_undo:
             undo_stack.push(undo_cmd)
         else:
@@ -218,33 +214,28 @@ class Port(object):
 
         if self.locked() or port.locked():
             name = [p.name() for p in [self, port] if p.locked()][0]
-            raise PortError(
-                'Can\'t connect port because "{}" is locked.'.format(name))
+            raise PortError(f"""Can\'t connect port because "{name}" is locked.""")
 
         # validate accept connection.
         node_type = self.node().type_
-        accepted_types = port.accepted_port_types().get(node_type)
-        if accepted_types:
+        if accepted_types := port.accepted_port_types().get(node_type):
             accepted_pnames = accepted_types.get(self.type_()) or set([])
             if self.name() not in accepted_pnames:
                 return
         node_type = port.node().type_
-        accepted_types = self.accepted_port_types().get(node_type)
-        if accepted_types:
+        if accepted_types := self.accepted_port_types().get(node_type):
             accepted_pnames = accepted_types.get(port.type_()) or set([])
             if port.name() not in accepted_pnames:
                 return
 
         # validate reject connection.
         node_type = self.node().type_
-        rejected_types = port.rejected_port_types().get(node_type)
-        if rejected_types:
+        if rejected_types := port.rejected_port_types().get(node_type):
             rejected_pnames = rejected_types.get(self.type_()) or set([])
             if self.name() in rejected_pnames:
                 return
         node_type = port.node().type_
-        rejected_types = self.rejected_port_types().get(node_type)
-        if rejected_types:
+        if rejected_types := self.rejected_port_types().get(node_type):
             rejected_pnames = rejected_types.get(port.type_()) or set([])
             if port.name() in rejected_pnames:
                 return
@@ -329,8 +320,7 @@ class Port(object):
 
         if self.locked() or port.locked():
             name = [p.name() for p in [self, port] if p.locked()][0]
-            raise PortError(
-                'Can\'t disconnect port because "{}" is locked.'.format(name))
+            raise PortError(f"""Can\'t disconnect port because "{name}" is locked.""")
 
         graph = self.node().graph
         if push_undo:

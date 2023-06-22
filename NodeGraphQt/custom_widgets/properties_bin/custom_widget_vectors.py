@@ -42,8 +42,7 @@ class _PropVector(BaseProperty):
 
     def _update_items(self):
         if not isinstance(self._value, (list, tuple)):
-            raise TypeError('Value "{}" must be either list or tuple.'
-                            .format(self._value))
+            raise TypeError(f'Value "{self._value}" must be either list or tuple.')
         for index, value in enumerate(self._value):
             if (index + 1) > len(self._items):
                 continue

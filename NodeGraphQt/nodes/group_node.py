@@ -34,9 +34,7 @@ class GroupNode(BaseNode):
         Returns:
             bool: true if the node is expanded.
         """
-        if not self.graph:
-            return False
-        return bool(self.id in self.graph.sub_graphs)
+        return False if not self.graph else self.id in self.graph.sub_graphs
 
     def get_sub_graph(self):
         """
@@ -78,8 +76,7 @@ class GroupNode(BaseNode):
         Returns:
             SubGraph: node graph used to manage the nodes expaneded session.
         """
-        sub_graph = self.graph.expand_group_node(self)
-        return sub_graph
+        return self.graph.expand_group_node(self)
 
     def collapse(self):
         """
@@ -93,9 +90,7 @@ class GroupNode(BaseNode):
 
     def set_name(self, name=''):
         super(GroupNode, self).set_name(name)
-        # update the tab bar and navigation labels.
-        sub_graph = self.get_sub_graph()
-        if sub_graph:
+        if sub_graph := self.get_sub_graph():
             nav_widget = sub_graph.navigation_widget
             nav_widget.update_label_item(self.name(), self.id)
 
@@ -155,8 +150,7 @@ class GroupNode(BaseNode):
 
         if self.is_expanded:
             sub_graph = self.get_sub_graph()
-            port_node = sub_graph.get_node_by_port(port)
-            if port_node:
+            if port_node := sub_graph.get_node_by_port(port):
                 sub_graph.remove_node(port_node, push_undo=False)
 
         super(GroupNode, self).delete_input(port)
@@ -169,8 +163,7 @@ class GroupNode(BaseNode):
 
         if self.is_expanded:
             sub_graph = self.get_sub_graph()
-            port_node = sub_graph.get_node_by_port(port)
-            if port_node:
+            if port_node := sub_graph.get_node_by_port(port):
                 sub_graph.remove_node(port_node, push_undo=False)
 
         super(GroupNode, self).delete_output(port)

@@ -26,8 +26,7 @@ class PortModel(object):
         self.connected_ports = defaultdict(list)
 
     def __repr__(self):
-        return '<{}(\'{}\') object at {}>'.format(
-            self.__class__.__name__, self.name, hex(id(self)))
+        return f"<{self.__class__.__name__}(\'{self.name}\') object at {hex(id(self))}>"
 
     @property
     def to_dict(self):
@@ -117,8 +116,7 @@ class NodeModel(object):
         self._TEMP_reject_connection_types = {}
 
     def __repr__(self):
-        return '<{}(\'{}\') object at {}>'.format(
-            self.__class__.__name__, self.name, self.id)
+        return f"<{self.__class__.__name__}(\'{self.name}\') object at {self.id}>"
 
     def add_property(self, name, value, items=None, range=None,
                      widget_type=None, tab=None):
@@ -138,11 +136,9 @@ class NodeModel(object):
         tab = tab or 'Properties'
 
         if name in self.properties.keys():
-            raise NodePropertyError(
-                '"{}" reserved for default property.'.format(name))
+            raise NodePropertyError(f'"{name}" reserved for default property.')
         if name in self._custom_prop.keys():
-            raise NodePropertyError(
-                '"{}" property already exists.'.format(name))
+            raise NodePropertyError(f'"{name}" property already exists.')
 
         self._custom_prop[name] = value
 
@@ -179,7 +175,7 @@ class NodeModel(object):
         elif name in self._custom_prop.keys():
             self._custom_prop[name] = value
         else:
-            raise NodePropertyError('No property "{}"'.format(name))
+            raise NodePropertyError(f'No property "{name}"')
 
     def get_property(self, name):
         """
@@ -226,8 +222,7 @@ class NodeModel(object):
         """
         model = self._graph_model
         if model is None:
-            attrs = self._TEMP_property_attrs.get(name)
-            if attrs:
+            if attrs := self._TEMP_property_attrs.get(name):
                 return attrs[name].get('tab')
             return
         return model.get_node_common_properties(self.type_)[name]['tab']
@@ -250,8 +245,7 @@ class NodeModel(object):
             accept_ptype (str): port type accept.
             accept_ntype (str):port node type to accept.
         """
-        model = self._graph_model
-        if model:
+        if model := self._graph_model:
             model.add_port_accept_connection_type(
                 port_name, port_type, node_type,
                 accept_pname, accept_ptype, accept_ntype
@@ -266,7 +260,7 @@ class NodeModel(object):
             connection_data = connection_data[key]
 
         if accept_ptype not in connection_data:
-            connection_data[accept_ptype] = set([accept_pname])
+            connection_data[accept_ptype] = {accept_pname}
         else:
             connection_data[accept_ptype].add(accept_pname)
 
@@ -291,8 +285,7 @@ class NodeModel(object):
         Returns:
 
         """
-        model = self._graph_model
-        if model:
+        if model := self._graph_model:
             model.add_port_reject_connection_type(
                 port_name, port_type, node_type,
                 reject_pname, reject_ptype, reject_ntype
@@ -307,7 +300,7 @@ class NodeModel(object):
             connection_data = connection_data[key]
 
         if reject_ptype not in connection_data:
-            connection_data[reject_ptype] = set([reject_pname])
+            connection_data[reject_ptype] = {reject_pname}
         else:
             connection_data[reject_ptype].add(reject_pname)
 
@@ -384,8 +377,7 @@ class NodeModel(object):
                     'multi_connection': model.multi_connection,
                     'display_name': model.display_name,
                 })
-            connected_ports = model.to_dict['connected_ports']
-            if connected_ports:
+            if connected_ports := model.to_dict['connected_ports']:
                 inputs[name] = connected_ports
         for name, model in node_dict.pop('outputs').items():
             if self.port_deletion_allowed:
@@ -394,8 +386,7 @@ class NodeModel(object):
                     'multi_connection': model.multi_connection,
                     'display_name': model.display_name,
                 })
-            connected_ports = model.to_dict['connected_ports']
-            if connected_ports:
+            if connected_ports := model.to_dict['connected_ports']:
                 outputs[name] = connected_ports
         if inputs:
             node_dict['inputs'] = inputs
@@ -409,8 +400,7 @@ class NodeModel(object):
         if self.subgraph_session:
             node_dict['subgraph_session'] = self.subgraph_session
 
-        custom_props = node_dict.pop('_custom_prop', {})
-        if custom_props:
+        if custom_props := node_dict.pop('_custom_prop', {}):
             node_dict['custom'] = custom_props
 
         exclude = ['_graph_model',
@@ -537,7 +527,7 @@ class NodeGraphModel(object):
             connection_data = connection_data[key]
 
         if accept_ptype not in connection_data:
-            connection_data[accept_ptype] = set([accept_pname])
+            connection_data[accept_ptype] = {accept_pname}
         else:
             connection_data[accept_ptype].add(accept_pname)
 
@@ -582,7 +572,7 @@ class NodeGraphModel(object):
             connection_data = connection_data[key]
 
         if reject_ptype not in connection_data:
-            connection_data[reject_ptype] = set([reject_pname])
+            connection_data[reject_ptype] = {reject_pname}
         else:
             connection_data[reject_ptype].add(reject_pname)
 

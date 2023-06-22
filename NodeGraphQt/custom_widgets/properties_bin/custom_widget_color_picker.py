@@ -49,9 +49,7 @@ class PropColorPickerRGB(BaseProperty):
             QPushButton::hover {{background-color: rgba({0}, {1}, {2}, 200);}}
             '''.format(*c)
         )
-        self._button.setToolTip(
-            'rgb: {}\nhex: {}'.format(self._color[:3], hex_color)
-        )
+        self._button.setToolTip(f'rgb: {self._color[:3]}\nhex: {hex_color}')
 
     def get_value(self):
         return self._color[:3]
@@ -94,9 +92,7 @@ class PropColorPickerRGBA(PropColorPickerRGB):
             QPushButton::hover {{background-color: rgba({0}, {1}, {2}, {3});}}
             '''.format(*c)
         )
-        self._button.setToolTip(
-            'rgba: {}\nhex: {}'.format(self._color, hex_color)
-        )
+        self._button.setToolTip(f'rgba: {self._color}\nhex: {hex_color}')
 
     def get_value(self):
         return self._color[:4]

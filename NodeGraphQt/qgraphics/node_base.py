@@ -245,8 +245,7 @@ class NodeItem(AbstractNodeItem):
                     event.ignore()
                     return
 
-            viewer = self.viewer()
-            if viewer:
+            if viewer := self.viewer():
                 viewer.node_double_clicked.emit(self.id)
         super(NodeItem, self).mouseDoubleClickEvent(event)
 
@@ -275,10 +274,10 @@ class NodeItem(AbstractNodeItem):
         Args:
             state (bool): node disable state.
         """
-        tooltip = '<b>{}</b>'.format(self.name)
+        tooltip = f'<b>{self.name}</b>'
         if state:
             tooltip += ' <font color="red"><b>(DISABLED)</b></font>'
-        tooltip += '<br/>{}<br/>'.format(self.type_)
+        tooltip += f'<br/>{self.type_}<br/>'
         self.setToolTip(tooltip)
 
     def _set_base_size(self, add_w=0.0, add_h=0.0):
@@ -290,10 +289,8 @@ class NodeItem(AbstractNodeItem):
             add_h (float): add additional height.
         """
         self._width, self._height = self.calc_size(add_w, add_h)
-        if self._width < NodeEnum.WIDTH.value:
-            self._width = NodeEnum.WIDTH.value
-        if self._height < NodeEnum.HEIGHT.value:
-            self._height = NodeEnum.HEIGHT.value
+        self._width = max(self._width, NodeEnum.WIDTH.value)
+        self._height = max(self._height, NodeEnum.HEIGHT.value)
 
     def _set_text_color(self, color):
         """
@@ -561,9 +558,7 @@ class NodeItem(AbstractNodeItem):
         txt_offset = PortEnum.CLICK_FALLOFF.value - 2
         spacing = 1
 
-        # adjust input position
-        inputs = [p for p in self.inputs if p.isVisible()]
-        if inputs:
+        if inputs := [p for p in self.inputs if p.isVisible()]:
             port_width = inputs[0].boundingRect().width()
             port_height = inputs[0].boundingRect().height()
             port_x = (port_width / 2) * -1
@@ -577,9 +572,7 @@ class NodeItem(AbstractNodeItem):
                 txt_x = port.boundingRect().width() / 2 - txt_offset
                 text.setPos(txt_x, port.y() - 1.5)
 
-        # adjust output position
-        outputs = [p for p in self.outputs if p.isVisible()]
-        if outputs:
+        if outputs := [p for p in self.outputs if p.isVisible()]:
             port_width = outputs[0].boundingRect().width()
             port_height = outputs[0].boundingRect().height()
             port_x = width - (port_width / 2)
@@ -595,9 +588,7 @@ class NodeItem(AbstractNodeItem):
                 text.setPos(txt_x, port.y() - 1.5)
 
     def _align_ports_vertical(self, v_offset):
-        # adjust input position
-        inputs = [p for p in self.inputs if p.isVisible()]
-        if inputs:
+        if inputs := [p for p in self.inputs if p.isVisible()]:
             port_width = inputs[0].boundingRect().width()
             port_height = inputs[0].boundingRect().height()
             half_width = port_width / 2
@@ -608,9 +599,7 @@ class NodeItem(AbstractNodeItem):
                 port.setPos(port_x - half_width, port_y)
                 port_x += delta
 
-        # adjust output position
-        outputs = [p for p in self.outputs if p.isVisible()]
-        if outputs:
+        if outputs := [p for p in self.outputs if p.isVisible()]:
             port_width = outputs[0].boundingRect().width()
             port_height = outputs[0].boundingRect().height()
             half_width = port_width / 2
@@ -810,14 +799,14 @@ class NodeItem(AbstractNodeItem):
     @AbstractNodeItem.width.setter
     def width(self, width=0.0):
         w, h = self.calc_size()
-        width = width if width > w else w
+        width = max(width, w)
         AbstractNodeItem.width.fset(self, width)
 
     @AbstractNodeItem.height.setter
     def height(self, height=0.0):
         w, h = self.calc_size()
-        h = 70 if h < 70 else h
-        height = height if height > h else h
+        h = max(h, 70)
+        height = max(height, h)
         AbstractNodeItem.height.fset(self, height)
 
     @AbstractNodeItem.disabled.setter
@@ -922,10 +911,7 @@ class NodeItem(AbstractNodeItem):
         Returns:
             PortItem: input port qgraphics item.
         """
-        if painter_func:
-            port = CustomPortItem(self, painter_func)
-        else:
-            port = PortItem(self)
+        port = CustomPortItem(self, painter_func) if painter_func else PortItem(self)
         port.name = name
         port.port_type = PortTypeEnum.IN.value
         port.multi_connection = multi_port
@@ -949,10 +935,7 @@ class NodeItem(AbstractNodeItem):
         Returns:
             PortItem: output port qgraphics item.
         """
-        if painter_func:
-            port = CustomPortItem(self, painter_func)
-        else:
-            port = PortItem(self)
+        port = CustomPortItem(self, painter_func) if painter_func else PortItem(self)
         port.name = name
         port.port_type = PortTypeEnum.OUT.value
         port.multi_connection = multi_port
@@ -1021,10 +1004,9 @@ class NodeItem(AbstractNodeItem):
         self._widgets[widget.get_name()] = widget
 
     def get_widget(self, name):
-        widget = self._widgets.get(name)
-        if widget:
+        if widget := self._widgets.get(name):
             return widget
-        raise NodeWidgetError('node has no widget "{}"'.format(name))
+        raise NodeWidgetError(f'node has no widget "{name}"')
 
     def has_widget(self, name):
         return name in self._widgets.keys()

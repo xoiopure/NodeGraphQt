@@ -26,10 +26,10 @@ import NodeGraphQt
 
 project = 'NodeGraphQt'
 author = NodeGraphQt.pkg_info.__author__
-copyright = '{}, {}'.format(datetime.now().year, author)
+copyright = f'{datetime.now().year}, {author}'
 
 # The full version, including alpha/beta/rc tags
-release = '{}'.format(NodeGraphQt.VERSION)
+release = f'{NodeGraphQt.VERSION}'
 # The short X.Y version
 version = '{0}.{1}'.format(*NodeGraphQt.VERSION.split('.'))
 

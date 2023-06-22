@@ -13,8 +13,7 @@ class BaseProperty(QtWidgets.QWidget):
     value_changed = QtCore.Signal(str, object)
 
     def __repr__(self):
-        return '<{}() object at {}>'.format(
-            self.__class__.__name__, hex(id(self)))
+        return f'<{self.__class__.__name__}() object at {hex(id(self))}>'
 
     def get_value(self):
         """

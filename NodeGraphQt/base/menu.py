@@ -38,8 +38,7 @@ class NodeGraphMenu(object):
         self._items = []
 
     def __repr__(self):
-        return '<{}("{}") object at {}>'.format(
-            self.__class__.__name__, self.name(), hex(id(self)))
+        return f'<{self.__class__.__name__}("{self.name()}") object at {hex(id(self))}>'
 
     @property
     def qmenu(self):
@@ -104,7 +103,7 @@ class NodeGraphMenu(object):
             NodeGraphQt.NodeGraphMenu: the appended menu item.
         """
         if name in self._menus:
-            raise NodeMenuError('menu object "{}" already exists!'.format(name))
+            raise NodeMenuError(f'menu object "{name}" already exists!')
         base_menu = BaseMenu(name, self.qmenu)
         self.qmenu.addMenu(base_menu)
         menu = NodeGraphMenu(self._graph, base_menu)
@@ -130,14 +129,13 @@ class NodeGraphMenu(object):
             action.setShortcutVisibleInContextMenu(True)
 
         if isinstance(shortcut, str):
-            search = re.search(r'(?:\.|)QKeySequence\.(\w+)', shortcut)
-            if search:
-                shortcut = getattr(QtGui.QKeySequence, search.group(1))
-            elif all([i in ['Alt', 'Enter'] for i in shortcut.split('+')]):
+            if search := re.search(r'(?:\.|)QKeySequence\.(\w+)', shortcut):
+                shortcut = getattr(QtGui.QKeySequence, search[1])
+            elif all(i in ['Alt', 'Enter'] for i in shortcut.split('+')):
                 shortcut = QtGui.QKeySequence(
                     QtCore.Qt.ALT + QtCore.Qt.Key_Return
                 )
-            elif all([i in ['Return', 'Enter'] for i in shortcut.split('+')]):
+            elif all(i in ['Return', 'Enter'] for i in shortcut.split('+')):
                 shortcut = QtCore.Qt.Key_Return
 
         if shortcut:
@@ -247,8 +245,7 @@ class NodeGraphCommand(object):
         self._func = func
 
     def __repr__(self):
-        return '<{}("{}") object at {}>'.format(
-            self.__class__.__name__, self.name(), hex(id(self)))
+        return f'<{self.__class__.__name__}("{self.name()}") object at {hex(id(self))}>'
 
     @property
     def qaction(self):

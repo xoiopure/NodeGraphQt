@@ -55,8 +55,7 @@ class PipeItem(QtWidgets.QGraphicsPathItem):
     def __repr__(self):
         in_name = self._input_port.name if self._input_port else ''
         out_name = self._output_port.name if self._output_port else ''
-        return '{}.Pipe(\'{}\', \'{}\')'.format(
-            self.__module__, in_name, out_name)
+        return f"{self.__module__}.Pipe(\'{in_name}\', \'{out_name}\')"
 
     def hoverEnterEvent(self, event):
         self.activate()
@@ -64,9 +63,7 @@ class PipeItem(QtWidgets.QGraphicsPathItem):
     def hoverLeaveEvent(self, event):
         self.reset()
         if self.input_port and self.output_port:
-            if self.input_port.node.selected:
-                self.highlight()
-            elif self.output_port.node.selected:
+            if self.input_port.node.selected or self.output_port.node.selected:
                 self.highlight()
         if self.isSelected():
             self.highlight()
@@ -385,10 +382,9 @@ class PipeItem(QtWidgets.QGraphicsPathItem):
         input_dist = self._calc_distance(inport_pos, pos)
         output_dist = self._calc_distance(outport_pos, pos)
         if input_dist < output_dist:
-            port = self.output_port if reverse else self.input_port
+            return self.output_port if reverse else self.input_port
         else:
-            port = self.input_port if reverse else self.output_port
-        return port
+            return self.input_port if reverse else self.output_port
 
     def viewer(self):
         """
@@ -403,8 +399,7 @@ class PipeItem(QtWidgets.QGraphicsPathItem):
         Returns:
             int: pipe layout mode.
         """
-        viewer = self.viewer()
-        if viewer:
+        if viewer := self.viewer():
             return viewer.get_pipe_layout()
 
     def viewer_layout_direction(self):
@@ -412,8 +407,7 @@ class PipeItem(QtWidgets.QGraphicsPathItem):
         Returns:
             int: graph layout mode.
         """
-        viewer = self.viewer()
-        if viewer:
+        if viewer := self.viewer():
             return viewer.get_layout_direction()
 
     def set_pipe_styling(self, color, width=0.5, style=0):
@@ -493,9 +487,7 @@ class PipeItem(QtWidgets.QGraphicsPathItem):
         """
         if self.input_port and self.input_port.node.disabled:
             return True
-        if self.output_port and self.output_port.node.disabled:
-            return True
-        return False
+        return bool(self.output_port and self.output_port.node.disabled)
 
     @property
     def input_port(self):
@@ -503,10 +495,7 @@ class PipeItem(QtWidgets.QGraphicsPathItem):
 
     @input_port.setter
     def input_port(self, port):
-        if isinstance(port, PortItem) or not port:
-            self._input_port = port
-        else:
-            self._input_port = None
+        self._input_port = port if isinstance(port, PortItem) or not port else None
 
     @property
     def output_port(self):
@@ -514,10 +503,7 @@ class PipeItem(QtWidgets.QGraphicsPathItem):
 
     @output_port.setter
     def output_port(self, port):
-        if isinstance(port, PortItem) or not port:
-            self._output_port = port
-        else:
-            self._output_port = None
+        self._output_port = port if isinstance(port, PortItem) or not port else None
 
     @property
     def color(self):
@@ -628,7 +614,7 @@ class LivePipeItem(PipeItem):
             else:
                 transform.rotate(90)
         self._idx_text.setPos(*text_pos)
-        self._idx_text.setPlainText('{}'.format(start_port.name))
+        self._idx_text.setPlainText(f'{start_port.name}')
 
         self._idx_pointer.setPolygon(transform.map(self._poly))
 

@@ -23,7 +23,7 @@ class PortOutputNodeItem(NodeItem):
     def _set_base_size(self, add_w=0.0, add_h=0.0):
         width, height = self.calc_size(add_w, add_h)
         self._width = width + 60
-        self._height = height if height >= 60 else 60
+        self._height = max(height, 60)
 
     def _paint_horizontal(self, painter, option, widget):
         self.auto_switch_mode()

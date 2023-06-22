@@ -15,8 +15,7 @@ class _NumberValueMenu(QtWidgets.QMenu):
         self.last_action = None
 
     def __repr__(self):
-        return '<{}() object at {}>'.format(
-            self.__class__.__name__, hex(id(self)))
+        return f'<{self.__class__.__name__}() object at {hex(id(self))}>'
 
     # re-implemented.
 
@@ -39,8 +38,7 @@ class _NumberValueMenu(QtWidgets.QMenu):
         """
         self.mouseMove.emit(event)
         super(_NumberValueMenu, self).mouseMoveEvent(event)
-        action = self.actionAt(event.pos())
-        if action:
+        if action := self.actionAt(event.pos()):
             if action is not self.last_action:
                 self.stepChange.emit()
             self.last_action = action
@@ -61,10 +59,7 @@ class _NumberValueMenu(QtWidgets.QMenu):
 
     def set_data_type(self, data_type):
         if data_type is int:
-            new_steps = []
-            for step in self.steps:
-                if '.' not in str(step):
-                    new_steps.append(step)
+            new_steps = [step for step in self.steps if '.' not in str(step)]
             self.set_steps(new_steps)
         elif data_type is float:
             self.set_steps(self.steps)
@@ -97,8 +92,7 @@ class _NumberValueEdit(QtWidgets.QLineEdit):
         self.set_data_type(data_type)
 
     def __repr__(self):
-        return '<{}() object at {}>'.format(
-            self.__class__.__name__, hex(id(self)))
+        return f'<{self.__class__.__name__}() object at {hex(id(self))}>'
 
     # re-implemented
 
@@ -170,7 +164,7 @@ class _NumberValueEdit(QtWidgets.QLineEdit):
 
     def get_value(self):
         if self.text().startswith('.'):
-            text = '0' + self.text()
+            text = f'0{self.text()}'
             self.setText(text)
         return self._convert_text(self.text())
 

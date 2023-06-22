@@ -38,9 +38,9 @@ class BaseMenu(QtWidgets.QMenu):
         }
         stylesheet = ''
         for css_class, css in style_dict.items():
-            style = '{} {{\n'.format(css_class)
+            style = f'{css_class} {{\n'
             for elm_name, elm_val in css.items():
-                style += '  {}:{};\n'.format(elm_name, elm_val)
+                style += f'  {elm_name}:{elm_val};\n'
             style += '}\n'
             stylesheet += style
         self.setStyleSheet(stylesheet)

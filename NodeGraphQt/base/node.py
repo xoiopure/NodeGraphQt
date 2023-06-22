@@ -97,8 +97,7 @@ class NodeObject(object):
         self._view.layout_direction = self._model.layout_direction
 
     def __repr__(self):
-        return '<{}("{}") object at {}>'.format(
-            self.__class__.__name__, self.NODE_NAME, hex(id(self)))
+        return f'<{self.__class__.__name__}("{self.NODE_NAME}") object at {hex(id(self))}>'
 
     @_ClassProperty
     def type_(cls):
@@ -109,7 +108,7 @@ class NodeObject(object):
         Returns:
             str: node type (``__identifier__.__className__``)
         """
-        return cls.__identifier__ + '.' + cls.__name__
+        return f'{cls.__identifier__}.{cls.__name__}'
 
     @property
     def id(self):
@@ -405,9 +404,7 @@ class NodeObject(object):
         if self.graph:
             undo_cmd = PropertyChangedCmd(self, name, value)
             if name == 'name':
-                undo_cmd.setText(
-                    'renamed "{}" to "{}"'.format(self.name(), value)
-                )
+                undo_cmd.setText(f'renamed "{self.name()}" to "{value}"')
             if push_undo:
                 undo_stack = self.graph.undo_stack()
                 undo_stack.push(undo_cmd)

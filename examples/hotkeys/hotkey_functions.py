@@ -47,8 +47,7 @@ def open_session(graph):
     Prompts a file open dialog to load a session.
     """
     current = graph.current_session()
-    file_path = graph.load_dialog(current)
-    if file_path:
+    if file_path := graph.load_dialog(current):
         graph.load_session(file_path)
 
 
@@ -57,8 +56,7 @@ def import_session(graph):
     Prompts a file open dialog to load a session.
     """
     current = graph.current_session()
-    file_path = graph.load_dialog(current)
-    if file_path:
+    if file_path := graph.load_dialog(current):
         graph.import_session(file_path)
 
 
@@ -66,10 +64,9 @@ def save_session(graph):
     """
     Prompts a file save dialog to serialize a session if required.
     """
-    current = graph.current_session()
-    if current:
+    if current := graph.current_session():
         graph.save_session(current)
-        msg = 'Session layout saved:\n{}'.format(current)
+        msg = f'Session layout saved:\n{current}'
         viewer = graph.viewer()
         viewer.message_dialog(msg, title='Session Saved')
     else:
@@ -81,8 +78,7 @@ def save_session_as(graph):
     Prompts a file save dialog to serialize a session.
     """
     current = graph.current_session()
-    file_path = graph.save_dialog(current)
-    if file_path:
+    if file_path := graph.save_dialog(current):
         graph.save_session(file_path)
 
 

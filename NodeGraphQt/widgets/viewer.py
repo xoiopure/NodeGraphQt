@@ -158,8 +158,7 @@ class NodeViewer(QtWidgets.QGraphicsView):
         self.reject_connection_types = None
 
     def __repr__(self):
-        return '<{}() object at {}>'.format(
-            self.__class__.__name__, hex(id(self)))
+        return f'<{self.__class__.__name__}() object at {hex(id(self))}>'
 
     def focusInEvent(self, event):
         """
@@ -357,8 +356,7 @@ class NodeViewer(QtWidgets.QGraphicsView):
         if ctx_menus['nodes'].isEnabled():
             pos = self.mapToScene(self._previous_pos)
             items = self._items_near(pos)
-            nodes = [i for i in items if isinstance(i, AbstractNodeItem)]
-            if nodes:
+            if nodes := [i for i in items if isinstance(i, AbstractNodeItem)]:
                 node = nodes[0]
                 ctx_menu = ctx_menus['nodes'].get_menu(node.type_, node.id)
                 if ctx_menu:
@@ -526,11 +524,11 @@ class NodeViewer(QtWidgets.QGraphicsView):
                 rect_items = self.scene().items(
                     self.mapToScene(rect).boundingRect()
                 )
-                node_ids = []
-                for item in rect_items:
-                    if isinstance(item, AbstractNodeItem):
-                        node_ids.append(item.id)
-
+                node_ids = [
+                    item.id
+                    for item in rect_items
+                    if isinstance(item, AbstractNodeItem)
+                ]
                 # emit the node selection signals.
                 if node_ids:
                     prev_ids = [

@@ -41,8 +41,8 @@ class BackdropSizer(QtWidgets.QGraphicsItem):
         if change == self.ItemPositionChange:
             item = self.parentItem()
             mx, my = item.minimum_size
-            x = mx if value.x() < mx else value.x()
-            y = my if value.y() < my else value.y()
+            x = max(value.x(), mx)
+            y = max(value.y(), my)
             value = QtCore.QPointF(x, y)
             item.on_sizer_pos_changed(value)
             return value
@@ -127,8 +127,7 @@ class BackdropNodeItem(AbstractNodeItem):
         return rect
 
     def mouseDoubleClickEvent(self, event):
-        viewer = self.viewer()
-        if viewer:
+        if viewer := self.viewer():
             viewer.node_double_clicked.emit(self.id)
         super(BackdropNodeItem, self).mouseDoubleClickEvent(event)
 
@@ -219,7 +218,7 @@ class BackdropNodeItem(AbstractNodeItem):
                              self.backdrop_text)
 
         if self.selected:
-            sel_color = [x for x in NodeEnum.SELECTED_COLOR.value]
+            sel_color = list(NodeEnum.SELECTED_COLOR.value)
             sel_color[-1] = 15
             painter.setBrush(QtGui.QColor(*sel_color))
             painter.setPen(QtCore.Qt.NoPen)
@@ -250,15 +249,14 @@ class BackdropNodeItem(AbstractNodeItem):
             rect = polygon.boundingRect()
             items = self.scene().items(rect, mode=mode[inc_intersects])
             for item in items:
-                if item == self or item == self._sizer:
+                if item in [self, self._sizer]:
                     continue
                 if isinstance(item, AbstractNodeItem):
                     nodes.append(item)
         return nodes
 
     def calc_backdrop_size(self, nodes=None):
-        nodes = nodes or self.get_nodes(True)
-        if nodes:
+        if nodes := nodes or self.get_nodes(True):
             nodes_rect = self._combined_rect(nodes)
         else:
             center = self.mapToScene(self.boundingRect().center())

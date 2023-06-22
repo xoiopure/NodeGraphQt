@@ -15,8 +15,7 @@ class NodeScene(QtWidgets.QGraphicsScene):
 
     def __repr__(self):
         cls_name = str(self.__class__.__name__)
-        return '<{}("{}") object at {}>'.format(
-            cls_name, self.viewer(), hex(id(self)))
+        return f'<{cls_name}("{self.viewer()}") object at {hex(id(self))}>'
 
     # def _draw_text(self, painter, pen):
     #     font = QtGui.QFont()
@@ -45,11 +44,10 @@ class NodeScene(QtWidgets.QGraphicsScene):
         first_left = left - (left % grid_size)
         first_top = top - (top % grid_size)
 
-        lines = []
-        lines.extend([
+        lines = [
             QtCore.QLineF(x, top, x, bottom)
             for x in range(first_left, right, grid_size)
-        ])
+        ]
         lines.extend([
             QtCore.QLineF(left, y, right, y)
             for y in range(first_top, bottom, grid_size)]

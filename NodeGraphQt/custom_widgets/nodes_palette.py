@@ -122,8 +122,7 @@ class NodesGridProxyModel(QtCore.QSortFilterProxyModel):
         super(NodesGridProxyModel, self).__init__(parent)
         
     def mimeData(self, indexes):
-        node_ids = ['node:{}'.format(i.data(QtCore.Qt.ToolTipRole))
-                    for i in indexes]
+        node_ids = [f'node:{i.data(QtCore.Qt.ToolTipRole)}' for i in indexes]
         node_urn = URN_SCHEME + ';'.join(node_ids)
         mime_data = super(NodesGridProxyModel, self).mimeData(indexes)
         mime_data.setUrls([node_urn])
@@ -211,9 +210,7 @@ class NodesPaletteWidget(QtWidgets.QWidget):
         node_graph.nodes_registered.connect(self._on_nodes_registered)
 
     def __repr__(self):
-        return '<{} object at {}>'.format(
-            self.__class__.__name__, hex(id(self))
-        )
+        return f'<{self.__class__.__name__} object at {hex(id(self))}>'
 
     def _on_nodes_registered(self, nodes):
         """
@@ -301,8 +298,7 @@ class NodesPaletteWidget(QtWidgets.QWidget):
         """
         if label in self._custom_labels.values():
             labels = {v: k for k, v in self._custom_labels.items()}
-            raise ValueError('label "{}" already in use for "{}"'
-                             .format(label, labels[label]))
+            raise ValueError(f'label "{label}" already in use for "{labels[label]}"')
         previous_label = self._custom_labels.get(category, '')
         for idx in range(self._tab_widget.count()):
             tab_text = self._tab_widget.tabText(idx)

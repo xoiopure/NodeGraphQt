@@ -62,12 +62,10 @@ class NodesTreeWidget(QtWidgets.QTreeWidget):
         self._build_tree()
 
     def __repr__(self):
-        return '<{} object at {}>'.format(
-            self.__class__.__name__, hex(id(self))
-        )
+        return f'<{self.__class__.__name__} object at {hex(id(self))}>'
 
     def mimeData(self, items):
-        node_ids = ['node:{}'.format(i.toolTip(0)) for i in items]
+        node_ids = [f'node:{i.toolTip(0)}' for i in items]
         node_urn = URN_SCHEME + ';'.join(node_ids)
         mime_data = super(NodesTreeWidget, self).mimeData(items)
         mime_data.setUrls([node_urn])
@@ -91,7 +89,7 @@ class NodesTreeWidget(QtWidgets.QTreeWidget):
             if category in self._custom_labels.keys():
                 label = self._custom_labels[category]
             else:
-                label = '{}'.format(category)
+                label = f'{category}'
             cat_item = BaseNodeTreeItem(self, [label], type=TYPE_CATEGORY)
             cat_item.setFirstColumnSpanned(True)
             cat_item.setFlags(QtCore.Qt.ItemIsEnabled)

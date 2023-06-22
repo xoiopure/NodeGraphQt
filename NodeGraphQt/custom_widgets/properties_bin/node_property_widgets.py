@@ -88,9 +88,7 @@ class _PropertiesContainer(QtWidgets.QWidget):
         layout.addLayout(self.__layout)
 
     def __repr__(self):
-        return '<{} object at {}>'.format(
-            self.__class__.__name__, hex(id(self))
-        )
+        return f'<{self.__class__.__name__} object at {hex(id(self))}>'
 
     def add_widget(self, name, widget, value, label=None):
         """
@@ -185,9 +183,7 @@ class NodePropWidget(QtWidgets.QWidget):
         self._read_node(node)
 
     def __repr__(self):
-        return '<{} object at {}>'.format(
-            self.__class__.__name__, hex(id(self))
-        )
+        return f'<{self.__class__.__name__} object at {hex(id(self))}>'
 
     def _on_close(self):
         """
@@ -303,7 +299,7 @@ class NodePropWidget(QtWidgets.QWidget):
             PropListWidget: tab child widget.
         """
         if name in self.__tab_windows.keys():
-            raise AssertionError('Tab name {} already taken!'.format(name))
+            raise AssertionError(f'Tab name {name} already taken!')
         self.__tab_windows[name] = _PropertiesContainer(self)
         self.__tab.addTab(self.__tab_windows[name], name)
         return self.__tab_windows[name]
@@ -321,8 +317,7 @@ class NodePropWidget(QtWidgets.QWidget):
         if name == 'name':
             return self.name_wgt
         for tab_name, prop_win in self.__tab_windows.items():
-            widget = prop_win.get_widget(name)
-            if widget:
+            if widget := prop_win.get_widget(name):
                 return widget
 
 
@@ -404,7 +399,7 @@ class PropertiesBinWidget(QtWidgets.QWidget):
         node_graph.property_changed.connect(self.__on_graph_property_changed)
 
     def __repr__(self):
-        return '<{} object at {}>'.format(self.__class__.__name__, hex(id(self)))
+        return f'<{self.__class__.__name__} object at {hex(id(self))}>'
 
     def __on_prop_close(self, node_id):
         items = self._prop_list.findItems(node_id, QtCore.Qt.MatchExactly)
@@ -488,8 +483,7 @@ class PropertiesBinWidget(QtWidgets.QWidget):
         if rows >= self.limit():
             self._prop_list.removeRow(rows - 1)
 
-        itm_find = self._prop_list.findItems(node.id, QtCore.Qt.MatchExactly)
-        if itm_find:
+        if itm_find := self._prop_list.findItems(node.id, QtCore.Qt.MatchExactly):
             self._prop_list.removeRow(itm_find[0].row())
 
         self._prop_list.insertRow(0)
@@ -539,8 +533,7 @@ class PropertiesBinWidget(QtWidgets.QWidget):
             NodePropWidget: node property widget.
         """
         node_id = node if isinstance(node, str) else node.id
-        itm_find = self._prop_list.findItems(node_id, QtCore.Qt.MatchExactly)
-        if itm_find:
+        if itm_find := self._prop_list.findItems(node_id, QtCore.Qt.MatchExactly):
             item = itm_find[0]
             return self._prop_list.cellWidget(item.row(), 0)
 
